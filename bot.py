@@ -27,7 +27,8 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # Конфигурация
-BOT_TOKEN = '7736978396:AAGu2yNz_vpesKNV7Y2bmsqx5cKpNU3C8PE'
+import os
+BOT_TOKEN = os.getenv('BOT_TOKEN')
 CHANNEL_USERNAME = '@priznavashki_Melovoe'
 MODERATOR_IDS = [813475634, 5919268354]
 
@@ -248,7 +249,21 @@ def main():
     app.add_handler(MessageHandler(filters.COMMAND, unknown))
 
     print("Бот запущен.")
-    app.run_polling()
+    
+import os
+PORT = int(os.environ.get("PORT", 8080))
+WEBHOOK_URL = os.environ.get("WEBHOOK_URL", f"https://your-railway-url.up.railway.app/{BOT_TOKEN}")
+
+async def set_webhook():
+    await app.bot.set_webhook(url=WEBHOOK_URL)
+
+app.run_webhook(
+    listen="0.0.0.0",
+    port=PORT,
+    webhook_path=f"/{BOT_TOKEN}",
+    on_startup=[set_webhook]
+)
+
 
 
 if __name__ == '__main__':
